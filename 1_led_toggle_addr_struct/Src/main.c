@@ -35,21 +35,11 @@
 #define GPIOA_OFFSET		(0x000UL)
 #define GPIOA_BASE			(AHB2_PERIPH_BASE + GPIOA_OFFSET)
 
-#define AHB2EN_R_OFFSET		(0x4C)
-#define RCC_AHB2EN_R		(*(volatile unsigned int *)(RCC_BASE + AHB2EN_R_OFFSET))
-
-#define MODE_R_OFFSET		(0x00)
-#define GPIOA_MODE_R		(*(volatile unsigned int *)(GPIOA_BASE + MODE_R_OFFSET))
-
-#define OD_R_OFFSET			(0x14)
-#define GPIOA_OD_R			(*(volatile unsigned int *)(GPIOA_BASE + OD_R_OFFSET))
-
 #define PIN_5				(1U<<5)
 #define LED_PIN				PIN_5
 
 #define GPIOAEN				(1U<<0)
 
-#define __IO volatile
 
 typedef struct
 {
@@ -70,24 +60,17 @@ typedef struct
 int main(void)
 {
 	/* 1. enable clock access to GPIOA */
-	//RCC_AHB2EN_R |= GPIOAEN;
 	RCC->AHB2ENR |= GPIOAEN;
 
 	/* 2. set PA5 as output pin */
-//	GPIOA_MODE_R |= (1U<<10); // set bit 10 to 1
-//	GPIOA_MODE_R &=~(1U<<11); // set bit 11 to 0
-
 	GPIOA->MODER |= (1U<<10); // set bit 10 to 1
 	GPIOA->MODER &= ~(1U<<11); // set bit 11 to 0
 
 	while(1)
 	{
 		/* 3. set PA5 high */
-		//GPIOA_OD_R |= LED_PIN;
 
 		/* 4. experiment: led toggle */
-//		GPIOA_OD_R ^= LED_PIN;
-
 		GPIOA->ODR ^= LED_PIN;
 		for (int i = 0; i < 100000; i++){}
 	}
