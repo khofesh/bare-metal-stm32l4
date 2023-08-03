@@ -22,27 +22,39 @@
 #define PIN_5				(1U<<5)
 #define LED_PIN				PIN_5
 
+#define PIN_13				(1U<<13)
+#define BTN_PIN				PIN_13
+
 #define GPIOAEN				(1U<<0)
+#define GPIOCEN				(1U<<2)
 
 int main(void)
 {
-	/* 1. enable clock access to GPIOA */
+	/* enable clock access to GPIOA */
 	RCC->AHB2ENR |= GPIOAEN;
+	/* enable clock access to GPIOC */
+	RCC->AHB2ENR |= GPIOCEN;
 
-	/* 2. set PA5 as output pin */
+	/* set PA5 as output pin */
 	GPIOA->MODER |= (1U<<10); // set bit 10 to 1
 	GPIOA->MODER &= ~(1U<<11); // set bit 11 to 0
 
+	/* set PC13 as input pin */
+	GPIOC->MODER &= ~(1U<<26);
+	GPIOC->MODER &= ~(1U<<27);
+
 	while(1)
 	{
-		/* 3. set PA5 high */
-
-		/* 4. experiment: led toggle */
-
-		GPIOA->BSRR |= (1U<<5);
-		for (int i = 0; i < 100000; i++){}
-
-		GPIOA->BSRR |= (1U<<21);
-		for (int i = 0; i < 100000; i++){}
+		/* check if button is pressed */
+		if (GPIOC->IDR & BTN_PIN)
+		{
+			/* turn on the LED */
+			GPIOA->BSRR |= (1U<<5);
+		}
+		else
+		{
+			/* turn off the LED */
+			GPIOA->BSRR |= (1U<<21);
+		}
 	}
 }
